@@ -402,6 +402,16 @@ def buscar_por_criterios(contactos:list, criterio:str, busqueda:str) -> list:
 
 
 def buscar_teléfono(contactos:list , telefono:str) -> list:
+    """
+    Busca contactos en la lista por número de teléfono.
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+        telefono (str): Número de teléfono a buscar.
+
+    Returns:
+        list or None: Lista de contactos que contienen el número de teléfono buscado. Devuelve None si no se encuentran coincidencias.
+    """
     lista_contacto = []
     for contacto in contactos:
         telefonos = contacto['telefonos']
@@ -412,6 +422,12 @@ def buscar_teléfono(contactos:list , telefono:str) -> list:
         
         
 def mostrar_contactos_por_criterio(contactos:list):
+    """
+    Muestra los contactos de la agenda dependiendo de lo que el usuario eleija
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+    """
     opciones = ["nombre", "apellido", "email", "telefonos"]
     try:
         print("Selecciona qué quieres buscar en la agenda:")
@@ -451,62 +467,52 @@ def mostrar_contactos_por_criterio(contactos:list):
         print("No se encontró el contacto a buscar \n\n")
       
 def agenda(contactos: list):
-    """ Ejecuta el menú de la agenda con varias opciones
-    ...
+    """ 
+    Ejecuta el menú de la agenda con varias opciones
+    
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+
     """
-    #TODO: Crear un bucle para mostrar el menú y ejecutar las funciones necesarias según la opción seleccionada...
     opcion = pedir_opcion()
     while opcion != 8:
-        #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 7
         if opcion in OPCIONES_MENU - {8}:
             borrar_consola()
-            match opcion:
-                case 1:
-                    agregar_contacto(contactos)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
-                case 2:
-                    print("Introduce el email del usario a modificar:")
-                    email = input()
-                    modificar_contacto(contactos, email)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
-                case 3:
-                    print("Introduce el email a eliminar:")
-                    email = input()
-                    eliminar_contacto(contactos, email)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
-                case 4:
-                    vaciar_agenda(contactos)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
-                case 5:
-                    cargar_contactos(contactos)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
-                case 6:
-                    mostrar_contactos_por_criterio(contactos)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
-                case 7:
-                    mostrar_contactos(contactos)
-                    mostrar_menu()
-                    opcion = pedir_opcion()
+            if opcion == 1:
+                agregar_contacto(contactos)
+            elif opcion == 2:
+                email = input("Introduce el email del usuario a modificar: ")
+                modificar_contacto(contactos, email)
+            elif opcion == 3:
+                email = input("Introduce el email a eliminar: ")
+                eliminar_contacto(contactos, email)
+            elif opcion == 4:
+                vaciar_agenda(contactos)
+            elif opcion == 5:
+                cargar_contactos(contactos)
+            elif opcion == 6:
+                mostrar_contactos_por_criterio(contactos)
+            elif opcion == 7:
+                mostrar_contactos(contactos)
+
+            mostrar_menu()
+            opcion = pedir_opcion()
         else:
             opcion = pedir_opcion()
     print("-- Hasta luego! ---")
 
 
 def pulse_tecla_para_continuar():
-    """ Muestra un mensaje y realiza una pausa hasta que se pulse una tecla
+    """ 
+    Muestra un mensaje y realiza una pausa hasta que se pulse una tecla
     """
     print("\n Pulsa una tecla para continuar....")
     input()
 
 
 def main():
-    """ Función principal del programa
+    """ 
+    Función principal del programa
     """
     contactos = []
     
