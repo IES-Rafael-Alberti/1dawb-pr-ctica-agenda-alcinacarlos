@@ -58,7 +58,12 @@ def cargar_contactos(contactos: list):
                     'email': email,
                     'telefonos': telefonos
                 }
+                for contacto in contactos:
+                    if email == contacto['email']:
+                        raise NameError
                 contactos.append(diccionario)
+    except NameError:
+        print("\n\n **CONTACTO YÁ INCLUIDO EN LA LISTA**\n\n")
     except:
         print("Fichero no válido")
 
@@ -77,6 +82,7 @@ def formatear_telefonos(telefonos: list) -> list:
         return None
     telefonos_formateado = []
     for numero in telefonos:
+        numero = numero.replace(" ", "")
         if len(numero) == 12:
             telefonos_formateado.append(numero[:3] + "-" + numero[3:])
         else:
@@ -119,6 +125,55 @@ def eliminar_contacto(contactos: list, email: str):
         print(f"**Error** {e}")
         print("No se eliminó ningún contacto")
 
+def vaciar_agenda(contactos:list):
+    contactos.clear()
+    print("--- Agenda vaciada correctamente \n\n")
+
+def modificar_contacto(contactos:list, email:str):
+    opciones = ["nombre", "apellido", "email", "telefonos"]
+    try:
+        pos = buscar_contacto(contactos, email)
+        if pos != None:
+            print("Selecciona qué quieres modificar de este contacto:")
+            for i in range(1, len(opciones) + 1):
+                print(f"{i}. {opciones[i - 1].capitalize()}")
+            seleccion = input()
+            borrar_consola()
+            match seleccion:
+                case "1":
+                    print("--- Modificando nombre ---")
+                    print(f"A qué nombre quieres cambiar {contactos[pos]['nombre']}")
+                    contactos[pos]['nombre'] = pedir_nombre()
+                case "2":
+                    print("--- Modificando apellido ---")
+                    print(f"Qué apellido le quieres poner a {contactos[pos]['nombre']}")
+                    contactos[pos]['apellido'] = pedir_apellido()
+                case "3":
+                    print("--- Modificando email ---")
+                    print(f"Qué email quieres cambiar a {contactos[pos]['email']}")
+                    contactos[pos]['email'] = pedir_email(contactos)
+                case "4":
+                    telefonos_formateados = formatear_telefonos(contactos[pos]['telefonos'])
+                    if telefonos_formateados == None:
+                        telefonos = "Ninguno"
+                    else:
+                        telefonos = " / ".join(telefonos_formateados)
+                    print("--- Modificando teléfonos ---")
+                    print(f"Cambiando: {telefonos}")
+                    print("Introduce TODOS LOS NÚMEROS que quieres que se guarden con el contacto")
+                    contactos[pos]['telefonos'] = pedir_telefono()
+                case other:
+                    print("No has introducido una opción válida")
+                    return
+                
+            print("\nContacto modificado correctamente\n\n")
+            
+        else:
+            print("No se encontró el contacto para modificar")
+    except Exception as e:
+        print(f"**Error** {e}")
+        print("No se modificó ningún contacto")
+
 def mostrar_menu():
     print("MENÚ AGENDA")
     print("------")
@@ -132,15 +187,12 @@ def mostrar_menu():
     print("8. Salir")
     print()
     
-def pedir_opcion() -> int:
-    print(">> Seleccione una opción válida: ")
-    opcion_ok = True
-    while opcion_ok:
-        try:
-            opcion = int(input())
-            return opcion
-        except:
-            print("Opción no válida, introduce una opción válida dentro de la lita")
+def pedir_opcion():
+    try:
+        opcion = int(input("Ingrese una opción válida: "))
+        return opcion
+    except ValueError:
+        return -1
 
     
 def validar_email(email:str, contactos:list):
@@ -155,14 +207,9 @@ def validar_email(email:str, contactos:list):
             raise ValueError("el email ya existe en la agenda")
 
 def pedir_email(contactos:list) -> str:
-    email_ok = True
-    while email_ok:
-        email = input("Ingrese un email: ")
-        try:
-            validar_email(email, contactos)
-            return email
-        except ValueError as e:
-            print(f"Error: {e}")
+    email = input("Ingrese un email: ")
+    validar_email(email, contactos)
+    return email
 
 def pedir_nombre() -> str:
     nombre_ok = True
@@ -190,7 +237,6 @@ def pedir_apellido() -> str:
             
 def validar_telefono(telefono:str) ->bool:
     telefono = telefono.replace(" ", "")
-    print(telefono)
     if telefono.startswith("+34"):
         if len(telefono) != 12 or telefono[4:].isdigit() == False:
             return False
@@ -216,17 +262,76 @@ def pedir_telefono() -> list:
 def agregar_contacto(contactos:list):
     borrar_consola()
     print("---- Agregando contacto.....")
-    nuevo_contacto = {
-        'nombre': pedir_nombre(),
-        'apellido': pedir_apellido(),
-        'email': pedir_email(contactos),
-        'telefonos': pedir_telefono()
-    }
-    print(nuevo_contacto)
-    contactos.append(nuevo_contacto)
-    print("--- Contacto añadid correctamente ---")
+    try:
+        nuevo_contacto = {
+            'nombre': pedir_nombre(),
+            'apellido': pedir_apellido(),
+            'email': pedir_email(contactos),
+            'telefonos': pedir_telefono()
+        }
+        contactos.append(nuevo_contacto)
+        print("--- Contacto añadido correctamente ---")
+    except ValueError as e:
+        print(f"Error: {e}")
+    
+    
+def buscar_por_criterios(contactos:list, criterio:str, busqueda:str) -> list:
+    lista_contacto = []
+    for contacto in contactos:
+        if contacto[criterio] == busqueda:
+            lista_contacto.append(contacto)
+            return lista_contacto
+    return None
 
 
+def buscar_teléfono(contactos:list , telefono:str) -> list:
+    lista_contacto = []
+    for contacto in contactos:
+        telefonos = contacto['telefonos']
+        if telefono in telefonos:
+            lista_contacto.append(contacto)
+            return lista_contacto
+    return None
+        
+        
+def mostrar_contactos_por_criterio(contactos:list):
+    opciones = ["nombre", "apellido", "email", "telefonos"]
+    try:
+        print("Selecciona qué quieres buscar en la agenda:")
+        for i in range(1, len(opciones) + 1):
+            print(f"{i}. {opciones[i - 1].capitalize()}")
+        seleccion = input()
+        borrar_consola()
+        match seleccion:
+            case "1":
+                print("-- Buscando por nombre --")
+                print("Introduce el nombre qué quieres buscar en la agenda: ")
+                nombre = pedir_nombre()
+                contacto = buscar_por_criterios(contactos, "nombre", nombre)
+                mostrar_contactos(contacto)
+            case "2":
+                print("-- Buscando por apellido --")
+                print("Introduce el apellido qué quieres buscar en la agenda: ")
+                apellido = pedir_apellido()
+                contacto = buscar_por_criterios(contactos, "apellido", apellido)
+                mostrar_contactos(contacto)
+            case "3":
+                print("-- Buscando por email --")
+                print("Introduce el email qué quieres buscar en la agenda: ")
+                email = input()
+                contacto = buscar_por_criterios(contactos, "email", email)
+                mostrar_contactos(contacto)
+            case "4":
+                print("-- Buscando por teléfono --")
+                print("Introduce el teléfono qué quieres buscar en la agenda: ")
+                telefono = input()
+                contacto = buscar_teléfono(contactos , telefono)
+                mostrar_contactos(contacto)
+            case other:
+                print("No has introducido una opción válida")
+                return  
+    except:
+        print("No se encontró el contacto a buscar \n\n")
       
 def agenda(contactos: list):
     """ Ejecuta el menú de la agenda con varias opciones
@@ -237,9 +342,16 @@ def agenda(contactos: list):
     while opcion != 8:
         #TODO: Se valorará que utilices la diferencia simétrica de conjuntos para comprobar que la opción es un número entero del 1 al 7
         if opcion in OPCIONES_MENU - {8}:
+            borrar_consola()
             match opcion:
                 case 1:
                     agregar_contacto(contactos)
+                    mostrar_menu()
+                    opcion = pedir_opcion()
+                case 2:
+                    print("Introduce el email del usario a modificar:")
+                    email = input()
+                    modificar_contacto(contactos, email)
                     mostrar_menu()
                     opcion = pedir_opcion()
                 case 3:
@@ -248,8 +360,16 @@ def agenda(contactos: list):
                     eliminar_contacto(contactos, email)
                     mostrar_menu()
                     opcion = pedir_opcion()
+                case 4:
+                    vaciar_agenda(contactos)
+                    mostrar_menu()
+                    opcion = pedir_opcion()
                 case 5:
                     cargar_contactos(contactos)
+                    mostrar_menu()
+                    opcion = pedir_opcion()
+                case 6:
+                    mostrar_contactos_por_criterio(contactos)
                     mostrar_menu()
                     opcion = pedir_opcion()
                 case 7:
@@ -258,6 +378,7 @@ def agenda(contactos: list):
                     opcion = pedir_opcion()
         else:
             opcion = pedir_opcion()
+    print("-- Hasta luego! ---")
 
 
 def pulse_tecla_para_continuar():
