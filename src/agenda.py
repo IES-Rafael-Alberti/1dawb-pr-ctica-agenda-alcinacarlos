@@ -40,9 +40,13 @@ def borrar_consola():
 
 
 def cargar_contactos(contactos: list):
-    """ Carga los contactos iniciales de la agenda desde un fichero...
     """
-    #TODO: Controlar los posibles problemas derivados del uso de ficheros...
+    Carga los contactos iniciales de la agenda desde RUTA_FICHERO y extrae información de contacto.
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos actuales.
+
+    """
     try:
         with open(RUTA_FICHERO, 'r') as fichero:
             for linea in fichero:
@@ -69,6 +73,17 @@ def cargar_contactos(contactos: list):
 
 
 def buscar_contacto(contactos:list, email:str) -> int:
+    """
+    Busca un contacto en la lista por su dirección de correo electrónico.
+    
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+        email (str): Dirección de correo electrónico a buscar.
+        
+    Returns:
+        int or None: Devuelve el índice del contacto o None.
+    """
+    
     i = 0
     for contacto in contactos:
         if contacto['email'] == email:
@@ -78,6 +93,15 @@ def buscar_contacto(contactos:list, email:str) -> int:
     return None
 
 def formatear_telefonos(telefonos: list) -> list:
+    """
+    Formatea una lista de números de teléfono.
+    
+    Args:
+        telefonos (list): Lista de números de teléfono a formatear.
+
+    Returns:
+        list: Lista de números de teléfono formateados. None si la lista de teléfonos está vacía.
+    """
     if telefonos == []:
         return None
     telefonos_formateado = []
@@ -91,6 +115,12 @@ def formatear_telefonos(telefonos: list) -> list:
 
 
 def mostrar_contactos(contactos: list):
+    """
+    Muestra los contactos de la agenda ordenados alfabéticamente por nombre.
+    
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+    """
     nombres = []
     for contacto in contactos:
         nombres.append(contacto['nombre'])
@@ -110,11 +140,14 @@ def mostrar_contactos(contactos: list):
                 print(f"Teléfonos: {telefonos}\n")
 
 def eliminar_contacto(contactos: list, email: str):
-    """ Elimina un contacto de la agenda
-    ...
+    """
+    Elimina un contacto de la agenda basándose en su dirección de correo electrónico.
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+        email (str): Dirección de correo electrónico del contacto a eliminar.
     """
     try:
-        #TODO: Crear función buscar_contacto para recuperar la posición de un contacto con un email determinado
         pos = buscar_contacto(contactos, email)
         if pos != None:
             del contactos[pos]
@@ -126,10 +159,24 @@ def eliminar_contacto(contactos: list, email: str):
         print("No se eliminó ningún contacto")
 
 def vaciar_agenda(contactos:list):
+    """
+    Vacia completamente la lista de contactos en la agenda.
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+    """
     contactos.clear()
     print("--- Agenda vaciada correctamente \n\n")
 
 def modificar_contacto(contactos:list, email:str):
+    """
+    Modifica un contacto en la agenda basándose en su dirección de correo electrónico.
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+        email (str): Dirección de correo electrónico del contacto a modificar.
+        
+    """
     opciones = ["nombre", "apellido", "email", "telefonos"]
     try:
         pos = buscar_contacto(contactos, email)
@@ -172,9 +219,12 @@ def modificar_contacto(contactos:list, email:str):
             print("No se encontró el contacto para modificar")
     except Exception as e:
         print(f"**Error** {e}")
-        print("No se modificó ningún contacto")
+        print("No se modificó ningún contacto\n\n")
 
 def mostrar_menu():
+    """
+    Muestra el menú de opciones para la agenda.
+    """
     print("MENÚ AGENDA")
     print("------")
     print("1. Nuevo contacto")
@@ -188,6 +238,12 @@ def mostrar_menu():
     print()
     
 def pedir_opcion():
+    """
+    Solicita al usuario que ingrese una opción numérica válida.
+
+    Returns:
+        int: Devuelve el número ingresado o -1 si la opción no es válida
+    """
     try:
         opcion = int(input("Ingrese una opción válida: "))
         return opcion
@@ -196,6 +252,14 @@ def pedir_opcion():
 
     
 def validar_email(email:str, contactos:list):
+    """
+    Valida que el correo electrónico no esté vacío, contenga "@" y ".", y no exista en la lista de contactos.
+
+    Args:
+        email (str): correo electrónico a validar.
+        contactos (list): Lista de diccionarios que contiene los contactos.
+        
+    """
     if email.strip() == "":
         raise ValueError("el email no puede ser una cadena vacía")
 
@@ -207,11 +271,26 @@ def validar_email(email:str, contactos:list):
             raise ValueError("el email ya existe en la agenda")
 
 def pedir_email(contactos:list) -> str:
+    """
+    Pide al usuario que ingrese un email y lo valida utilizando la función validar_email.
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos.
+
+    Returns:
+        str: correo electronico.
+    """
     email = input("Ingrese un email: ")
     validar_email(email, contactos)
     return email
 
 def pedir_nombre() -> str:
+    """
+    Solicita al usuario un nombre
+
+    Returns:
+        str: nombre
+    """
     nombre_ok = True
     while nombre_ok:
         print("1. Introduce el nombre")
@@ -224,6 +303,12 @@ def pedir_nombre() -> str:
             print(e)
 
 def pedir_apellido() -> str:
+    """
+    Solicita al usuario un apellido
+
+    Returns:
+        str: apellido
+    """
     apellido_ok = True
     while apellido_ok:
         print("2. Introduce el apellido")
@@ -236,6 +321,17 @@ def pedir_apellido() -> str:
             print(e)
             
 def validar_telefono(telefono:str) ->bool:
+    """
+    Valida que un teléfono debe estar compuesto solo por 9 números, aunque debe permitirse que se introduzcan espacios entre los números.
+    Además, un número de teléfono puede incluir de manera opcional un prefijo +34.
+    De igual manera, aunque existan espacios entre el prefijo y los 9 números al introducirlo, debe almacenarse sin espacios.
+    
+    Args:
+        telefono (str): Cadena de número de teléfono a validar.
+
+    Returns:
+        bool: True si la cadena de número de teléfono es válida, False en caso contrario.
+    """
     telefono = telefono.replace(" ", "")
     if telefono.startswith("+34"):
         if len(telefono) != 12 or telefono[4:].isdigit() == False:
@@ -247,6 +343,13 @@ def validar_telefono(telefono:str) ->bool:
         return True
 
 def pedir_telefono() -> list:
+    """
+    Solicita al usuario que ingrese números de teléfono hasta que introduzca el enter.
+
+    Returns:
+        list: Lista de números de teléfono validados introducidos por el usuario.
+    """
+    
     print("4. Introduce los telefonos <ENTER> para salir")
     telefono = input()
     lista_telefonos = []
@@ -260,6 +363,9 @@ def pedir_telefono() -> list:
     return lista_telefonos
 
 def agregar_contacto(contactos:list):
+    """
+    Agrega un nuevo contacto a la lista de contactos.
+    """
     borrar_consola()
     print("---- Agregando contacto.....")
     try:
@@ -276,6 +382,17 @@ def agregar_contacto(contactos:list):
     
     
 def buscar_por_criterios(contactos:list, criterio:str, busqueda:str) -> list:
+    """
+    Busca contactos en la lista según un criterio y un término de búsqueda
+
+    Args:
+        contactos (list): Lista de diccionarios que contiene los contactos
+        criterio (str): Criterio por el cual se realizará la búsqueda
+        busqueda (str): Término de búsqueda
+
+    Returns:
+        list or None: Lista de contactos que coinciden con la búsqueda. Devuelve None si no se encuentran coincidencias.
+    """
     lista_contacto = []
     for contacto in contactos:
         if contacto[criterio] == busqueda:
@@ -391,75 +508,22 @@ def pulse_tecla_para_continuar():
 def main():
     """ Función principal del programa
     """
-    borrar_consola()
-
-    #TODO: Asignar una estructura de datos vacía para trabajar con la agenda
     contactos = []
-
-    #TODO: Modificar la función cargar_contactos para que almacene todos los contactos del fichero en una lista con un diccionario por contacto (claves: nombre, apellido, email y telefonos)
-    #TODO: Realizar una llamada a la función cargar_contacto con todo lo necesario para que funcione correctamente.
+    
     cargar_contactos(contactos)
-
-    #TODO: Crear función para agregar un contacto. Debes tener en cuenta lo siguiente:
-    # - El nombre y apellido no pueden ser una cadena vacía o solo espacios y se guardarán con la primera letra mayúscula y el resto minúsculas (ojo a los nombre compuestos)
-    # - El email debe ser único en la lista de contactos, no puede ser una cadena vacía y debe contener el carácter @.
-    # - El email se guardará tal cuál el usuario lo introduzca, con las mayúsculas y minúsculas que escriba. 
-    #  (CORREO@gmail.com se considera el mismo email que correo@gmail.com)
-    # - Pedir teléfonos hasta que el usuario introduzca una cadena vacía, es decir, que pulse la tecla <ENTER> sin introducir nada.
-    # - Un teléfono debe estar compuesto solo por 9 números, aunque debe permitirse que se introduzcan espacios entre los números.
-    # - Además, un número de teléfono puede incluir de manera opcional un prefijo +34.
-    # - De igual manera, aunque existan espacios entre el prefijo y los 9 números al introducirlo, debe almacenarse sin espacios.
-    # - Por ejemplo, será posible introducir el número +34 600 100 100, pero guardará +34600100100 y cuando se muestren los contactos, el telófono se mostrará como +34-600100100. 
-    #TODO: Realizar una llamada a la función agregar_contacto con todo lo necesario para que funcione correctamente.
-    #agregar_contacto(?)
-
-    #pulse_tecla_para_continuar()
-    #borrar_consola()
-
-    #TODO: Realizar una llamada a la función eliminar_contacto con todo lo necesario para que funcione correctamente, eliminando el contacto con el email rciruelo@gmail.com
-    #eliminar_contacto(?)
-
-    #pulse_tecla_para_continuar()
-    #borrar_consola()
-
-    #TODO: Crear función mostrar_contactos para que muestre todos los contactos de la agenda con el siguiente formato:
-    # ** IMPORTANTE: debe mostrarlos ordenados según el nombre, pero no modificar la lista de contactos de la agenda original **
-    #
-    # AGENDA (6)
-    # ------
-    # Nombre: Antonio Amargo (aamargo@gmail.com)
-    # Teléfonos: niguno
-    # ......
-    # Nombre: Daniela Alba (danalba@gmail.com)
-    # Teléfonos: +34-600606060 / +34-670898934
-    # ......
-    # Nombre: Laura Iglesias (liglesias@gmail.com)
-    # Teléfonos: 666777333 / 666888555 / 607889988
-    # ......
-    # ** resto de contactos **
-    #
-    #TODO: Realizar una llamada a la función mostrar_contactos con todo lo necesario para que funcione correctamente.
-    #mostrar_contactos(contactos)
-
-    #pulse_tecla_para_continuar()
-    #borrar_consola()
-
-    #TODO: Crear un menú para gestionar la agenda con las funciones previamente desarrolladas y las nuevas que necesitéis:
-    # AGENDA
-    # ------
-    # 1. Nuevo contacto
-    # 2. Modificar contacto
-    # 3. Eliminar contacto
-    # 4. Vaciar agenda
-    # 5. Cargar agenda inicial
-    # 6. Mostrar contactos por criterio
-    # 7. Mostrar la agenda completa
-    # 8. Salir
-    #
-    # >> Seleccione una opción: 
-    #
-    #TODO: Para la opción 3, modificar un contacto, deberás desarrollar las funciones necesarias para actualizar la información de un contacto.
-    #TODO: También deberás desarrollar la opción 6 que deberá preguntar por el criterio de búsqueda (nombre, apellido, email o telefono) y el valor a buscar para mostrar los contactos que encuentre en la agenda.
+    
+    agregar_contacto(contactos)
+    pulse_tecla_para_continuar()
+    borrar_consola()
+    
+    eliminar_contacto(contactos, "rciruelo@gmail.com")
+    pulse_tecla_para_continuar()
+    borrar_consola()
+    
+    mostrar_contactos(contactos)
+    pulse_tecla_para_continuar()
+    borrar_consola()
+    
     mostrar_menu()
     agenda(contactos)
 
